@@ -1,0 +1,9 @@
+name: scmap-workflow 
+channels:
+  - bioconda
+  - conda-forge 
+  - defaults 
+dependencies: 
+  - dropletutils-scripts=0.0.4
+  - scmap-cli=0.0.4
+  
