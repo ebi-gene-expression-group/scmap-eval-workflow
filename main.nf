@@ -5,9 +5,9 @@ query_exp_mat = params.query_exp_mat
 QUERY_MAT = Channel.fromPath(query_exp_mat)
 
 process create_query_sce {
-    conda 'envs/environment.yaml'
+    conda 'envs/dropletutils.yaml'
     input:
-        file(query_mat) from QUERY_MAT //needs to be a file 
+        file(query_mat) from QUERY_MAT
 
     output:
         file("query_sce.rds") into QUERY_SCE
@@ -27,7 +27,7 @@ REF_MAT = Channel.fromPath(reference_exp_mat)
 REF_ANNO = Channel.fromPath(reference_anno)
 
 process create_reference_sce {
-    conda 'envs/environment.yaml'
+    conda 'envs/dropletutils.yaml'
     input:
         file(ref_mat) from REF_MAT
         file(ref_anno) from REF_ANNO
@@ -47,7 +47,7 @@ process create_reference_sce {
 
 // pre-process query dataset 
 process preprocess_query_sce {
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     input:
         file(query_sce) from QUERY_SCE
 
@@ -62,7 +62,7 @@ process preprocess_query_sce {
 
 // pre-process reference dataset
 process preprocess_ref_sce {
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     input:
         file(ref_sce) from REF_SCE 
 
@@ -76,7 +76,7 @@ process preprocess_ref_sce {
 
 // select relevant features for reference dataset 
 process select_ref_features {
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     input:
         file(ref_sce) from REF_SCE_PROC
     output:
@@ -90,7 +90,6 @@ process select_ref_features {
     """
 }
 
-
 projection_method = params.projection_method
 REF_CLUSTER = Channel.create()
 REF_CELL = Channel.create()
@@ -100,7 +99,7 @@ REF_FEATURES.choice(REF_CLUSTER, REF_CELL){channels[projection_method]}
 
 // obtain index for cluster-level projections 
 process index_cluster {
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     input:
         file(ref_features_sce) from REF_CLUSTER
 
@@ -117,7 +116,7 @@ process index_cluster {
 
 // obtain index for cell-level projections 
 process index_cell {
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     input:
         file(ref_features_sce) from REF_CELL
 
@@ -132,17 +131,17 @@ process index_cell {
 
 }
 
-// copy query channel into cluster and cell  
-QUERY_SCE_PROC.into{QUERY_SCE_CELL; QUERY_SCE_CLUSTER}
+// coerce queue channel into value channel for re-using 
+QUERY_SCE_PROC = QUERY_SCE_PROC.first()
 
 // obtain cluster-level projections 
 process get_cluster_projections{
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     publishDir "${params.output_dir}", mode: 'copy'
 
     input:
         file(ref_cluster_index) from REF_CLUSTER_INDEX
-        file(query_sce) from QUERY_SCE_CLUSTER
+        file(query_sce) from QUERY_SCE_PROC
 
     output:
         file("cluster_projection_result_sce.rds") into PROJECTED_CLUSTERS_SCE
@@ -160,12 +159,12 @@ process get_cluster_projections{
 
 // obtain cell-level projections 
 process get_cell_projections {
-    conda 'envs/environment.yaml'
+    conda 'envs/scmap.yaml'
     publishDir "${params.output_dir}", mode: 'copy'
 
     input:
         file(ref_cell_index) from REF_CELL_INDEX
-        file(query_sce) from QUERY_SCE_CELL
+        file(query_sce) from QUERY_SCE_PROC
 
     output:
         file("cell_projection_result_file.txt") into PROJECTED_CELLS_TXT 
