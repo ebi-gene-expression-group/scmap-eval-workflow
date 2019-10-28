@@ -6,6 +6,12 @@ QUERY_MAT = Channel.fromPath(query_exp_mat)
 
 process create_query_sce {
     conda 'envs/dropletutils.yaml'
+
+    // resource handling 
+    //errorStrategy { task.attempt < 3 ? 'retry' : 'ignore' }   
+    //maxRetries 3
+    //memory { 2.GB * task.attempt }
+    
     input:
         file(query_mat) from QUERY_MAT
 
@@ -184,6 +190,4 @@ process get_cell_projections {
                  -o cell_projection_result_object.rds
     """
 }
-
-
 
