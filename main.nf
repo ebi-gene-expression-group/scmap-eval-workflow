@@ -185,5 +185,3 @@ process get_cell_projections {
     """
 }
 
-
-
