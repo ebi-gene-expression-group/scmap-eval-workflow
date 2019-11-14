@@ -1,8 +1,67 @@
 #!/usr/bin/env nextflow 
 
+// data-extracting steps
+QUERY_MAT_URL = Channel.from(params.query_matrix_url)
+QUERY_BARCODES_URL = Channel.from(params.query_barcodes_url)
+QUERY_GENES_URL = Channel.from(params.query_genes_url)
+
+process get_query_data{
+    publishDir "${params.query_raw_data}", mode: 'copy'
+
+    conda 'envs/dropletutils.yaml'
+    input:
+        val matrix_url from QUERY_MAT_URL
+        val barcodes_url from QUERY_BARCODES_URL
+        val genes_url from QUERY_GENES_URL
+       
+    output:
+        file("matrix.mtx") into QUERY_MAT
+        file("barcodes.tsv") into QUERY_BARCODES
+        file("genes.tsv") into QUERY_GENES
+        val "${params.query_raw_data}" into QUERY_DIR
+
+    """
+    scmap-get-data.R\
+            --matrix-file-url ${matrix_url}\
+            --barcodes-file-url ${barcodes_url}\
+            --gene-id-file-url ${genes_url}\
+    """
+}
+
+REF_MAT_URL = Channel.from(params.reference_matrix_url)
+REF_BARCODES_URL = Channel.from(params.reference_barcodes_url)
+REF_GENES_URL = Channel.from(params.reference_genes_url)
+REF_METADATA_URL = Channel.from(params.reference_metadata_url)
+
+process get_reference_data{
+    publishDir "${params.reference_raw_data}", mode: 'copy'
+
+    conda 'envs/dropletutils.yaml'
+    input:
+        val matrix_url from REF_MAT_URL
+        val barcodes_url from REF_BARCODES_URL
+        val genes_url from REF_GENES_URL
+        val metadata_url from REF_METADATA_URL
+
+    output:
+        file("matrix.mtx") into REF_MAT
+        file("barcodes.tsv") into REF_BARCODES
+        file("genes.tsv") into REF_GENES 
+        file("reference_metadata.txt") into REF_METADATA
+        val "${params.reference_raw_data}" into REF_DIR
+
+    """
+    scmap-get-data.R\
+            --matrix-file-url ${matrix_url}\
+            --barcodes-file-url ${barcodes_url}\
+            --gene-id-file-url ${genes_url}\
+            --metadata-file-url ${metadata_url}
+    """
+}
+
 // produce sce object for query dataset
-query_exp_mat = params.query_exp_mat
-QUERY_MAT = Channel.fromPath(query_exp_mat)
+//query_exp_mat = params.query_raw_data
+//QUERY_DIR = Channel.fromPath(params.query_raw_data)
 
 process create_query_sce {
     conda 'envs/dropletutils.yaml'
@@ -13,40 +72,37 @@ process create_query_sce {
     //memory { 2.GB * task.attempt }
     
     input:
-        file(query_mat) from QUERY_MAT
+        val query_dir from QUERY_DIR
 
     output:
         file("query_sce.rds") into QUERY_SCE
 
     """
     dropletutils-read-10x-counts.R\
-                        -s ${query_mat}\
+                        -s ${query_dir}\
                         -c ${params.col_names}\
                         -o query_sce.rds
     """ 
 }
 
 // produce sce object for reference dataset 
-reference_exp_mat = params.reference_exp_mat
-reference_anno = params.reference_anno
-REF_MAT = Channel.fromPath(reference_exp_mat)
-REF_ANNO = Channel.fromPath(reference_anno)
-
+//REF_MAT = Channel.fromPath(params.reference_raw_data)
 process create_reference_sce {
     conda 'envs/dropletutils.yaml'
     input:
-        file(ref_mat) from REF_MAT
-        file(ref_anno) from REF_ANNO
+        file(ref_metadata) from REF_METADATA
+        val ref_dir from REF_DIR
 
     output:
         file("reference_sce.rds") into REF_SCE
 
     """
     dropletutils-read-10x-counts.R\
-                -s ${ref_mat}\
+                -s ${ref_dir}\
                 -c ${params.col_names}\
-                -m ${ref_anno}\
+                -m ${ref_metadata}\
                 -b ${params.cell_id_col}\
+                -f ${params.cell_id_col},${params.cluster_col}\
                 -o reference_sce.rds
     """ 
 }
