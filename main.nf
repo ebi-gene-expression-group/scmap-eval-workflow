@@ -6,7 +6,7 @@ QUERY_BARCODES_URL = Channel.from(params.query_barcodes_url)
 QUERY_GENES_URL = Channel.from(params.query_genes_url)
 
 process get_query_data{
-    publishDir "${params.query_raw_data}", mode: 'copy'
+    publishDir "${baseDir}/data", mode: 'copy'
 
     conda 'envs/dropletutils.yaml'
     input:
@@ -15,16 +15,14 @@ process get_query_data{
         val genes_url from QUERY_GENES_URL
        
     output:
-        file("matrix.mtx") into QUERY_MAT
-        file("barcodes.tsv") into QUERY_BARCODES
-        file("genes.tsv") into QUERY_GENES
-        val "${params.query_raw_data}" into QUERY_DIR
+        file("${params.query_raw_data}") into QUERY_DIR
 
     """
     scmap-get-data.R\
             --matrix-file-url ${matrix_url}\
             --barcodes-file-url ${barcodes_url}\
             --gene-id-file-url ${genes_url}\
+            --output-dir-path ${params.query_raw_data}
     """
 }
 
@@ -34,7 +32,7 @@ REF_GENES_URL = Channel.from(params.reference_genes_url)
 REF_METADATA_URL = Channel.from(params.reference_metadata_url)
 
 process get_reference_data{
-    publishDir "${params.reference_raw_data}", mode: 'copy'
+    publishDir "${baseDir}/data", mode: 'copy'
 
     conda 'envs/dropletutils.yaml'
     input:
@@ -44,18 +42,16 @@ process get_reference_data{
         val metadata_url from REF_METADATA_URL
 
     output:
-        file("matrix.mtx") into REF_MAT
-        file("barcodes.tsv") into REF_BARCODES
-        file("genes.tsv") into REF_GENES 
+        file("${params.reference_raw_data}") into REF_DIR
         file("reference_metadata.txt") into REF_METADATA
-        val "${params.reference_raw_data}" into REF_DIR
 
     """
     scmap-get-data.R\
             --matrix-file-url ${matrix_url}\
             --barcodes-file-url ${barcodes_url}\
             --gene-id-file-url ${genes_url}\
-            --metadata-file-url ${metadata_url}
+            --metadata-file-url ${metadata_url}\
+            --output-dir-path ${params.reference_raw_data}
     """
 }
 
@@ -72,7 +68,7 @@ process create_query_sce {
     //memory { 2.GB * task.attempt }
     
     input:
-        val query_dir from QUERY_DIR
+        file(query_dir) from QUERY_DIR
 
     output:
         file("query_sce.rds") into QUERY_SCE
@@ -91,7 +87,7 @@ process create_reference_sce {
     conda 'envs/dropletutils.yaml'
     input:
         file(ref_metadata) from REF_METADATA
-        val ref_dir from REF_DIR
+        file(ref_dir) from REF_DIR
 
     output:
         file("reference_sce.rds") into REF_SCE
@@ -138,6 +134,7 @@ process preprocess_ref_sce {
 
 // select relevant features for reference dataset 
 process select_ref_features {
+    publishDir "${baseDir}/data/output", mode: 'copy'
     conda 'envs/scmap.yaml'
     input:
         file(ref_sce) from REF_SCE_PROC
