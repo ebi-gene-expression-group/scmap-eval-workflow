@@ -4,7 +4,7 @@ channels:
   - conda-forge 
   - defaults 
 dependencies:
-  - openblas 
+  - openblas
   - scmap-cli=0.0.4
   - bioconductor-singlecellexperiment=1.6.0
   
