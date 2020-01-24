@@ -2,7 +2,7 @@
 
 
 // produce sce object for query dataset
-QUERY_DIR = Channel.from(params.query_10x_dir)
+QUERY_DIR = Channel.fromPath(params.query_10x_dir)
 process create_query_sce {
     conda "${baseDir}/envs/dropletutils.yaml"
 
@@ -25,8 +25,8 @@ process create_query_sce {
 }
 
 // produce sce object for reference dataset 
-REF_DIR = Channel.from(params.reference_10x_dir)
-REF_METADATA = Channel.from(params.reference_metadata)
+REF_DIR = Channel.fromPath(params.reference_10x_dir)
+REF_METADATA = Channel.fromPath(params.reference_metadata)
 process create_reference_sce {
     conda "${baseDir}/envs/dropletutils.yaml"
 
