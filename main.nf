@@ -18,9 +18,9 @@ process create_query_sce {
 
     """
     dropletutils-read-10x-counts.R\
-                        -s ${query_dir}\
-                        -c ${params.col_names}\
-                        -o query_sce.rds
+                        --samples ${query_dir}\
+                        --col-names ${params.col_names}\
+                        --output-object-file query_sce.rds
     """ 
 }
 
@@ -43,12 +43,12 @@ process create_reference_sce {
 
     """
     dropletutils-read-10x-counts.R\
-                -s ${ref_dir}\
-                -c ${params.col_names}\
-                -m ${ref_metadata}\
-                -b ${params.cell_id_col}\
-                -f ${params.cell_id_col},${params.cluster_col}\
-                -o reference_sce.rds
+                --samples ${ref_dir}\
+                --col-names ${params.col_names}\
+                --metadata-files ${ref_metadata}\
+                --cell-id-column ${params.cell_id_col}\
+                --metadata-columns ${params.cell_id_col},${params.cluster_col}\
+                --output-object-file reference_sce.rds
     """ 
 }
 
@@ -66,7 +66,7 @@ process preprocess_query_sce {
         file("query_sce_processed.rds") into QUERY_SCE_PROC 
 
     """
-    scmap-preprocess-sce.R -i ${query_sce} -o query_sce_processed.rds
+    scmap-preprocess-sce.R --input-object ${query_sce} --output-sce-object query_sce_processed.rds
 
     """
 }
@@ -86,7 +86,7 @@ process preprocess_ref_sce {
         file("ref_sce_processed.rds") into REF_SCE_PROC
 
     """
-    scmap-preprocess-sce.R -i ${ref_sce} -o ref_sce_processed.rds
+    scmap-preprocess-sce.R --input-object ${ref_sce} --output-sce-object ref_sce_processed.rds
     """
 }
 
@@ -106,9 +106,9 @@ process select_ref_features {
 
     """
     scmap-select-features.R\
-                -i ${ref_sce}\
-                -p ${params.plot_file}\
-                -o ref_features.rds
+                --input-object-file ${ref_sce}\
+                --output-plot-file ${params.plot_file}\
+                --output-object-file ref_features.rds
     """
 }
 
@@ -135,9 +135,9 @@ process index_cluster {
 
     """
     scmap-index-cluster.R\
-                    -i ${ref_features_sce}\
-                    -c ${params.cluster_col}\
-                    -o ref_index_cluster.rds
+                    --input-object-file ${ref_features_sce}\
+                    --cluster-col ${params.cluster_col}\
+                    --output-object-file ref_index_cluster.rds
     """
 }
 
@@ -157,8 +157,8 @@ process index_cell {
 
     """
     scmap-index-cell.R\
-                 -i ${ref_features_sce}\
-                 -o ref_index_cell.rds
+                 --input-object-file ${ref_features_sce}\
+                 --output-object-file ref_index_cell.rds
     """
 
 }
@@ -186,11 +186,11 @@ process get_cluster_projections{
         
             """
              scmap-scmap-cluster.R\
-                                -i ${ref_cluster_index}\
-                                -p ${query_sce}\
-                                -r ${params.threshold}\
-                                -t cluster_projection_result_file.txt\
-                                -o cluster_projection_result_sce.rds
+                                --index-object-file ${ref_cluster_index}\
+                                --projection-object-file ${query_sce}\
+                                --threshold ${params.threshold}\
+                                --output-text-file cluster_projection_result_file.txt\
+                                --output-object-file cluster_projection_result_sce.rds
             """
 }
 
@@ -216,13 +216,13 @@ process get_cell_projections {
 
     """
     scmap-scmap-cell.R\
-                 -i ${ref_cell_index}\
-                 -p ${query_sce}\
-                 -c ${params.cluster_col}\
-                 -t cell_projection_result_file.txt\
-                 -l closest_cells.txt\
-                 -s closest_cell_similarity.txt\
-                 -o cell_projection_result_object.rds
+                 --index-object-file ${ref_cell_index}\
+                 --projection-object-file ${query_sce}\
+                 --cluster-col ${params.cluster_col}\
+                 --output-clusters-text-file cell_projection_result_file.txt\
+                 --closest-cells-text-file closest_cells.txt\
+                 --closest-cells-similarities-text-file closest_cell_similarity.txt\
+                 --output-object-file cell_projection_result_object.rds
     """
 }
 
