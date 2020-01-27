@@ -6,9 +6,9 @@ QUERY_DIR = Channel.fromPath(params.query_10x_dir)
 process create_query_sce {
     conda "${baseDir}/envs/dropletutils.yaml"
 
-    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
-    maxRetries 10
-    memory { 16.GB * task.attempt }
+    //errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    //maxRetries 10
+    //memory { 16.GB * task.attempt }
     
     input:
         file(query_dir) from QUERY_DIR
@@ -30,9 +30,9 @@ REF_METADATA = Channel.fromPath(params.reference_metadata)
 process create_reference_sce {
     conda "${baseDir}/envs/dropletutils.yaml"
 
-    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
-    maxRetries 10
-    memory { 16.GB * task.attempt }
+    //errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    //maxRetries 10
+    //memory { 16.GB * task.attempt }
 
     input:
         file(ref_metadata) from REF_METADATA
