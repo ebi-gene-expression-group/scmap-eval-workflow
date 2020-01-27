@@ -1,5 +1,14 @@
 #!/usr/bin/env nextflow 
 
+params.results_dir = ""
+params.query_10x_dir = ""
+params.reference_10x_dir = ""
+params.reference_metadata = ""
+params.projection_method = ""
+params.cell_id_col = ""
+params.cluster_col = ""
+
+
 
 // produce sce object for query dataset
 QUERY_DIR = Channel.fromPath(params.query_10x_dir)
