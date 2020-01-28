@@ -1,19 +1,13 @@
 #!/usr/bin/env nextflow 
 
-params.results_dir = ""
-params.query_10x_dir = ""
-params.reference_10x_dir = ""
-params.reference_metadata = ""
-params.projection_method = ""
-params.cell_id_col = ""
-params.cluster_col = ""
-
-
-
 // produce sce object for query dataset
 QUERY_DIR = Channel.fromPath(params.query_10x_dir)
 process create_query_sce {
     conda "${baseDir}/envs/dropletutils.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 2
+    memory { 16.GB * task.attempt }
     
     input:
         file(query_dir) from QUERY_DIR
@@ -35,6 +29,10 @@ REF_METADATA = Channel.fromPath(params.reference_metadata)
 process create_reference_sce {
     conda "${baseDir}/envs/dropletutils.yaml"
 
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 2
+    memory { 16.GB * task.attempt }
+    
     input:
         file(ref_metadata) from REF_METADATA
         file(ref_dir) from REF_DIR
