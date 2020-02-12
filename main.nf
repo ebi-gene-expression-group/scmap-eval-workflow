@@ -225,12 +225,6 @@ process get_cell_projections {
     """
 }
 
-// combine the output of two channels 
-//PROJECTED_CELLS_TXT
-//    .concat(PROJECTED_CLUSTERS_TXT)
-//    .set(ALL_PROJECTIONS)
-
-
 process get_final_output_cluster{
     conda "${baseDir}/envs/dropletutils.yaml"
     publishDir "${params.results_dir}", mode: 'copy'  
@@ -239,12 +233,12 @@ process get_final_output_cluster{
         file(predictions) from PROJECTED_CLUSTERS_TXT
 
     output:
-        file("scmap-cluster_output.txt") into FINAL_TABLE_CLUSTERS
+        file("scmap-cluster_output_tbl.txt") into FINAL_TABLE_CLUSTERS
 
     """
-    get_workflow_output.R\
+    scmap_get_std_output.R\
                 --predictions-file ${predictions}\
-                --workflow-output scmap-cluster_output.txt
+                --output-table scmap-cluster_output_tbl.txt
     """
 
 }
@@ -260,9 +254,9 @@ process get_final_output_cell{
         file("scmap-cell_output.txt") into FINAL_TABLE_CELLS
 
     """
-    get_workflow_output.R\
+    scmap_get_std_output.R\
                 --predictions-file ${predictions}\
-                --workflow-output scmap-cell_output.txt
+                --output-table scmap-cell_output.txt
     """
 
 }
