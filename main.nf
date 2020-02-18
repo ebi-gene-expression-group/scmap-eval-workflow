@@ -226,7 +226,7 @@ process get_cell_projections {
 }
 
 process get_final_output_cluster{
-    conda "${baseDir}/envs/dropletutils.yaml"
+    conda "${baseDir}/envs/scmap.yaml"
     publishDir "${params.results_dir}", mode: 'copy'  
 
     input:
@@ -244,7 +244,7 @@ process get_final_output_cluster{
 }
 
 process get_final_output_cell{
-    conda "${baseDir}/envs/dropletutils.yaml"
+    conda "${baseDir}/envs/scmap.yaml"
     publishDir "${params.results_dir}", mode: 'copy'  
 
     input:
