@@ -233,7 +233,7 @@ process get_final_output_cluster{
         file(predictions) from PROJECTED_CLUSTERS_TXT
 
     output:
-        file("scmap-cluster_output_tbl.txt") into FINAL_TABLE_CLUSTERS
+        file("scmap-cluster_output.txt") into FINAL_TABLE_CLUSTERS
 
     """
     scmap_get_std_output.R\
