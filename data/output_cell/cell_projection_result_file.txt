@@ -1,0 +1,118 @@
+cell,scmap_cluster_labs,scmap_cluster_siml,combined_labs
+ERR2632411,unassigned,NA,unassigned
+ERR2632412,memory B cell,0.832221886725173,memory B cell
+ERR2632413,memory B cell,0.856268585431148,memory B cell
+ERR2632414,unassigned,NA,unassigned
+ERR2632415,memory B cell,0.850707565037212,memory B cell
+ERR2632416,memory B cell,0.829659458378386,memory B cell
+ERR2632417,unassigned,NA,unassigned
+ERR2632418,memory B cell,0.859129637939156,memory B cell
+ERR2632419,unassigned,NA,unassigned
+ERR2632420,unassigned,NA,unassigned
+ERR2632421,unassigned,NA,unassigned
+ERR2632422,memory B cell,0.863857867903346,memory B cell
+ERR2632423,unassigned,NA,unassigned
+ERR2632424,memory B cell,0.845938158540694,memory B cell
+ERR2632425,memory B cell,0.864758220992527,memory B cell
+ERR2632426,memory B cell,0.832073486790669,memory B cell
+ERR2632427,memory B cell,0.841482130206448,memory B cell
+ERR2632428,unassigned,NA,unassigned
+ERR2632429,memory B cell,0.847800446834859,memory B cell
+ERR2632430,unassigned,NA,unassigned
+ERR2632431,unassigned,NA,unassigned
+ERR2632432,unassigned,NA,unassigned
+ERR2632433,memory B cell,0.823096393777402,memory B cell
+ERR2632434,unassigned,NA,unassigned
+ERR2632435,memory B cell,0.838871412737679,memory B cell
+ERR2632436,memory B cell,0.834265318279036,memory B cell
+ERR2632437,unassigned,NA,unassigned
+ERR2632438,memory B cell,0.842628513456823,memory B cell
+ERR2632439,memory B cell,0.844547562056462,memory B cell
+ERR2632440,unassigned,NA,unassigned
+ERR2632441,unassigned,NA,unassigned
+ERR2632442,unassigned,NA,unassigned
+ERR2632443,unassigned,NA,unassigned
+ERR2632444,naive B cell,0.825270305772686,naive B cell
+ERR2632445,unassigned,NA,unassigned
+ERR2632446,transitional stage B cell,0.843016279778272,transitional stage B cell
+ERR2632447,unassigned,NA,unassigned
+ERR2632448,naive B cell,0.826950089456479,naive B cell
+ERR2632449,unassigned,NA,unassigned
+ERR2632450,unassigned,NA,unassigned
+ERR2632451,unassigned,NA,unassigned
+ERR2632452,unassigned,NA,unassigned
+ERR2632453,unassigned,NA,unassigned
+ERR2632454,unassigned,NA,unassigned
+ERR2632455,unassigned,NA,unassigned
+ERR2632456,unassigned,NA,unassigned
+ERR2632457,unassigned,NA,unassigned
+ERR2632458,unassigned,NA,unassigned
+ERR2632459,unassigned,NA,unassigned
+ERR2632460,unassigned,NA,unassigned
+ERR2632461,unassigned,NA,unassigned
+ERR2632462,unassigned,NA,unassigned
+ERR2632463,unassigned,NA,unassigned
+ERR2632464,unassigned,NA,unassigned
+ERR2632465,unassigned,NA,unassigned
+ERR2632466,unassigned,NA,unassigned
+ERR2632467,unassigned,NA,unassigned
+ERR2632468,unassigned,NA,unassigned
+ERR2632469,naive B cell,0.841017562317898,naive B cell
+ERR2632470,unassigned,NA,unassigned
+ERR2632471,plasmablast,0.916386588325213,plasmablast
+ERR2632472,plasmablast,0.923719021213225,plasmablast
+ERR2632473,plasmablast,0.89613375389997,plasmablast
+ERR2632474,plasmablast,0.85303397979244,plasmablast
+ERR2632475,plasmablast,0.897526927024113,plasmablast
+ERR2632476,plasmablast,0.855246777659615,plasmablast
+ERR2632477,plasmablast,0.812837233075677,plasmablast
+ERR2632478,plasmablast,0.884848902096659,plasmablast
+ERR2632479,plasmablast,0.915544357048362,plasmablast
+ERR2632480,plasmablast,0.941585002462049,plasmablast
+ERR2632481,plasmablast,0.902346899178571,plasmablast
+ERR2632482,plasmablast,0.914724089800932,plasmablast
+ERR2632483,plasmablast,0.931237970381082,plasmablast
+ERR2632484,plasmablast,0.928540300492351,plasmablast
+ERR2632485,plasmablast,0.840448370935425,plasmablast
+ERR2632486,plasmablast,0.879254110377113,plasmablast
+ERR2632487,plasmablast,0.912379239902256,plasmablast
+ERR2632488,plasmablast,0.873048649821139,plasmablast
+ERR2632489,plasmablast,0.923639814093442,plasmablast
+ERR2632490,plasmablast,0.901063974797628,plasmablast
+ERR2632491,plasmablast,0.847389924744617,plasmablast
+ERR2632492,plasmablast,0.918958419997294,plasmablast
+ERR2632493,plasmablast,0.940028060630999,plasmablast
+ERR2632494,plasmablast,0.778793788934777,plasmablast
+ERR2632495,plasmablast,0.912090556526316,plasmablast
+ERR2632496,plasmablast,0.895421907110301,plasmablast
+ERR2632497,plasmablast,0.892468125032885,plasmablast
+ERR2632498,plasmablast,0.893321097115778,plasmablast
+ERR2632499,plasmablast,0.875310129184181,plasmablast
+ERR2632500,plasmablast,0.940049135346849,plasmablast
+ERR2632501,unassigned,NA,unassigned
+ERR2632502,transitional stage B cell,0.846331526997198,transitional stage B cell
+ERR2632503,transitional stage B cell,0.841560939904105,transitional stage B cell
+ERR2632504,unassigned,NA,unassigned
+ERR2632505,transitional stage B cell,0.780062208776881,transitional stage B cell
+ERR2632506,unassigned,NA,unassigned
+ERR2632507,unassigned,NA,unassigned
+ERR2632508,unassigned,NA,unassigned
+ERR2632509,unassigned,NA,unassigned
+ERR2632510,unassigned,NA,unassigned
+ERR2632511,unassigned,NA,unassigned
+ERR2632512,unassigned,NA,unassigned
+ERR2632513,unassigned,NA,unassigned
+ERR2632514,unassigned,NA,unassigned
+ERR2632515,unassigned,NA,unassigned
+ERR2632516,unassigned,NA,unassigned
+ERR2632517,unassigned,NA,unassigned
+ERR2632518,unassigned,NA,unassigned
+ERR2632519,transitional stage B cell,0.871264370545589,transitional stage B cell
+ERR2632520,unassigned,NA,unassigned
+ERR2632521,unassigned,NA,unassigned
+ERR2632522,unassigned,NA,unassigned
+ERR2632523,unassigned,NA,unassigned
+ERR2632524,unassigned,NA,unassigned
+ERR2632525,unassigned,NA,unassigned
+ERR2632526,transitional stage B cell,0.820497131899729,transitional stage B cell
+ERR2632527,unassigned,NA,unassigned

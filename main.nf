@@ -1,59 +1,64 @@
 #!/usr/bin/env nextflow 
 
+
 // produce sce object for query dataset
-query_exp_mat = params.query_exp_mat
-QUERY_MAT = Channel.fromPath(query_exp_mat)
-
+QUERY_DIR = Channel.fromPath(params.query_10x_dir)
 process create_query_sce {
-    conda 'envs/dropletutils.yaml'
+    conda "${baseDir}/envs/dropletutils.yaml"
 
-    // resource handling 
-    //errorStrategy { task.attempt < 3 ? 'retry' : 'ignore' }   
-    //maxRetries 3
-    //memory { 2.GB * task.attempt }
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 2
+    memory { 16.GB * task.attempt }
     
     input:
-        file(query_mat) from QUERY_MAT
+        file(query_dir) from QUERY_DIR
 
     output:
         file("query_sce.rds") into QUERY_SCE
 
     """
     dropletutils-read-10x-counts.R\
-                        -s ${query_mat}\
-                        -c ${params.col_names}\
-                        -o query_sce.rds
+                        --samples ${query_dir}\
+                        --col-names ${params.col_names}\
+                        --output-object-file query_sce.rds
     """ 
 }
 
 // produce sce object for reference dataset 
-reference_exp_mat = params.reference_exp_mat
-reference_anno = params.reference_anno
-REF_MAT = Channel.fromPath(reference_exp_mat)
-REF_ANNO = Channel.fromPath(reference_anno)
-
+REF_DIR = Channel.fromPath(params.reference_10x_dir)
+REF_METADATA = Channel.fromPath(params.reference_metadata)
 process create_reference_sce {
-    conda 'envs/dropletutils.yaml'
+    conda "${baseDir}/envs/dropletutils.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 2
+    memory { 16.GB * task.attempt }
+    
     input:
-        file(ref_mat) from REF_MAT
-        file(ref_anno) from REF_ANNO
+        file(ref_metadata) from REF_METADATA
+        file(ref_dir) from REF_DIR
 
     output:
         file("reference_sce.rds") into REF_SCE
 
     """
     dropletutils-read-10x-counts.R\
-                -s ${ref_mat}\
-                -c ${params.col_names}\
-                -m ${ref_anno}\
-                -b ${params.cell_id_col}\
-                -o reference_sce.rds
+                --samples ${ref_dir}\
+                --col-names ${params.col_names}\
+                --metadata-files ${ref_metadata}\
+                --cell-id-column ${params.cell_id_col}\
+                --metadata-columns ${params.cell_id_col},${params.cluster_col}\
+                --output-object-file reference_sce.rds
     """ 
 }
 
 // pre-process query dataset 
 process preprocess_query_sce {
-    conda 'envs/scmap.yaml'
+    conda "${baseDir}/envs/scmap.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 10
+    memory { 16.GB * task.attempt }
     input:
         file(query_sce) from QUERY_SCE
 
@@ -61,14 +66,19 @@ process preprocess_query_sce {
         file("query_sce_processed.rds") into QUERY_SCE_PROC 
 
     """
-    scmap-preprocess-sce.R -i ${query_sce} -o query_sce_processed.rds
+    scmap-preprocess-sce.R --input-object ${query_sce} --output-sce-object query_sce_processed.rds
 
     """
 }
 
 // pre-process reference dataset
 process preprocess_ref_sce {
-    conda 'envs/scmap.yaml'
+    conda "${baseDir}/envs/scmap.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 10
+    memory { 16.GB * task.attempt }
+
     input:
         file(ref_sce) from REF_SCE 
 
@@ -76,13 +86,19 @@ process preprocess_ref_sce {
         file("ref_sce_processed.rds") into REF_SCE_PROC
 
     """
-    scmap-preprocess-sce.R -i ${ref_sce} -o ref_sce_processed.rds
+    scmap-preprocess-sce.R --input-object ${ref_sce} --output-sce-object ref_sce_processed.rds
     """
 }
 
 // select relevant features for reference dataset 
 process select_ref_features {
-    conda 'envs/scmap.yaml'
+    publishDir "${baseDir}/data/output", mode: 'copy'
+    conda "${baseDir}/envs/scmap.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }
+    maxRetries 10
+    memory { 16.GB * task.attempt }
+
     input:
         file(ref_sce) from REF_SCE_PROC
     output:
@@ -90,9 +106,9 @@ process select_ref_features {
 
     """
     scmap-select-features.R\
-                -i ${ref_sce}\
-                -p ${params.plot_file}\
-                -o ref_features.rds
+                --input-object-file ${ref_sce}\
+                --output-plot-file ${params.plot_file}\
+                --output-object-file ref_features.rds
     """
 }
 
@@ -105,7 +121,12 @@ REF_FEATURES.choice(REF_CLUSTER, REF_CELL){channels[projection_method]}
 
 // obtain index for cluster-level projections 
 process index_cluster {
-    conda 'envs/scmap.yaml'
+    conda "${baseDir}/envs/scmap.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 10
+    memory { 16.GB * task.attempt }
+
     input:
         file(ref_features_sce) from REF_CLUSTER
 
@@ -114,15 +135,20 @@ process index_cluster {
 
     """
     scmap-index-cluster.R\
-                    -i ${ref_features_sce}\
-                    -c ${params.cluster_col}\
-                    -o ref_index_cluster.rds
+                    --input-object-file ${ref_features_sce}\
+                    --cluster-col ${params.cluster_col}\
+                    --output-object-file ref_index_cluster.rds
     """
 }
 
 // obtain index for cell-level projections 
 process index_cell {
-    conda 'envs/scmap.yaml'
+    conda "${baseDir}/envs/scmap.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 10
+    memory { 16.GB * task.attempt }
+
     input:
         file(ref_features_sce) from REF_CELL
 
@@ -131,8 +157,8 @@ process index_cell {
 
     """
     scmap-index-cell.R\
-                 -i ${ref_features_sce}\
-                 -o ref_index_cell.rds
+                 --input-object-file ${ref_features_sce}\
+                 --output-object-file ref_index_cell.rds
     """
 
 }
@@ -142,8 +168,13 @@ QUERY_SCE_PROC = QUERY_SCE_PROC.first()
 
 // obtain cluster-level projections 
 process get_cluster_projections{
-    conda 'envs/scmap.yaml'
-    publishDir "${params.output_dir}", mode: 'copy'
+    conda "${baseDir}/envs/scmap.yaml"
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 10
+    memory { 16.GB * task.attempt }
+
+    publishDir "${params.output_dir_cluster}", mode: 'copy'
 
     input:
         file(ref_cluster_index) from REF_CLUSTER_INDEX
@@ -155,18 +186,22 @@ process get_cluster_projections{
         
             """
              scmap-scmap-cluster.R\
-                                -i ${ref_cluster_index}\
-                                -p ${query_sce}\
-                                -r ${params.threshold}\
-                                -t cluster_projection_result_file.txt\
-                                -o cluster_projection_result_sce.rds
+                                --index-object-file ${ref_cluster_index}\
+                                --projection-object-file ${query_sce}\
+                                --threshold ${params.threshold}\
+                                --output-text-file cluster_projection_result_file.txt\
+                                --output-object-file cluster_projection_result_sce.rds
             """
 }
 
 // obtain cell-level projections 
 process get_cell_projections {
-    conda 'envs/scmap.yaml'
-    publishDir "${params.output_dir}", mode: 'copy'
+    conda "${baseDir}/envs/scmap.yaml"
+    publishDir "${params.output_dir_cell}", mode: 'copy'
+
+    errorStrategy { task.exitStatus == 130 || task.exitStatus == 137  ? 'retry' : 'finish' }   
+    maxRetries 10
+    memory { 16.GB * task.attempt }
 
     input:
         file(ref_cell_index) from REF_CELL_INDEX
@@ -181,13 +216,48 @@ process get_cell_projections {
 
     """
     scmap-scmap-cell.R\
-                 -i ${ref_cell_index}\
-                 -p ${query_sce}\
-                 -c ${params.cluster_col}\
-                 -t cell_projection_result_file.txt\
-                 -l closest_cells.txt\
-                 -s closest_cell_similarity.txt\
-                 -o cell_projection_result_object.rds
+                 --index-object-file ${ref_cell_index}\
+                 --projection-object-file ${query_sce}\
+                 --cluster-col ${params.cluster_col}\
+                 --output-clusters-text-file cell_projection_result_file.txt\
+                 --closest-cells-text-file closest_cells.txt\
+                 --closest-cells-similarities-text-file closest_cell_similarity.txt\
+                 --output-object-file cell_projection_result_object.rds
     """
 }
 
+process get_final_output_cluster{
+    conda "${baseDir}/envs/scmap.yaml"
+    publishDir "${params.results_dir}", mode: 'copy'  
+
+    input:
+        file(predictions) from PROJECTED_CLUSTERS_TXT
+
+    output:
+        file("scmap-cluster_output.txt") into FINAL_TABLE_CLUSTERS
+
+    """
+    scmap_get_std_output.R\
+                --predictions-file ${predictions}\
+                --output-table scmap-cluster_output_tbl.txt
+    """
+
+}
+
+process get_final_output_cell{
+    conda "${baseDir}/envs/scmap.yaml"
+    publishDir "${params.results_dir}", mode: 'copy'  
+
+    input:
+        file(predictions) from PROJECTED_CELLS_TXT
+
+    output:
+        file("scmap-cell_output.txt") into FINAL_TABLE_CELLS
+
+    """
+    scmap_get_std_output.R\
+                --predictions-file ${predictions}\
+                --output-table scmap-cell_output.txt
+    """
+
+}

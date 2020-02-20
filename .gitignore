@@ -1,4 +1,6 @@
 work/
+data/query_raw_data
+data/reference_raw_data
 .nextflow*
 .DS_Store 
 data/output/
