@@ -1,5 +1,6 @@
 #!/usr/bin/env nextflow 
 
+
 // produce sce object for query dataset
 QUERY_DIR = Channel.fromPath(params.query_10x_dir)
 process create_query_sce {
