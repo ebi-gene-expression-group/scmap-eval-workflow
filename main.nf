@@ -239,7 +239,7 @@ process get_final_output_cluster{
     """
     scmap_get_std_output.R\
                 --predictions-file ${predictions}\
-                --output-table scmap-cluster_output_tbl.txt
+                --output-table scmap-cluster_output.txt
     """
 
 }
