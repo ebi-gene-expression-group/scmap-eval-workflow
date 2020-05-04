@@ -239,6 +239,7 @@ process get_final_output_cluster{
     """
     scmap_get_std_output.R\
                 --predictions-file ${predictions}\
+		--tool "scmap-cluster"\
                 --output-table scmap-cluster_output.txt
     """
 
@@ -257,6 +258,7 @@ process get_final_output_cell{
     """
     scmap_get_std_output.R\
                 --predictions-file ${predictions}\
+		--tool "scmap-cell"\
                 --output-table scmap-cell_output.txt
     """
 

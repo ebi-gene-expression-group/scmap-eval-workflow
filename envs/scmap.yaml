@@ -4,5 +4,5 @@ channels:
   - conda-forge 
   - defaults 
 dependencies:
-  - scmap-cli=0.0.5
+  - scmap-cli=0.0.8
   - bioconductor-singlecellexperiment=1.6.0
