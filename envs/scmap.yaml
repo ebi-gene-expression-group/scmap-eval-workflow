@@ -5,4 +5,4 @@ channels:
   - defaults 
 dependencies:
   - scmap-cli=0.0.9
-  - bioconductor-singlecellexperiment=1.6.0
+  - bioconductor-singlecellexperiment=1.8.0
